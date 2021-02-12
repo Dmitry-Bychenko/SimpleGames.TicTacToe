@@ -3,6 +3,8 @@
 - Strategy
 - Analysis
 
+[![NuGet version (SimpleGames.TicTacToe)](https://img.shields.io/nuget/v/SimpleGames.TicTacToe.svg?style=flat-square)](https://www.nuget.org/packages/SimpleGames.TicTacToe/)
+
 I use this library as a touch stone when I teach game theory. Some typical examples of usage:
 
 ## Strategy:
