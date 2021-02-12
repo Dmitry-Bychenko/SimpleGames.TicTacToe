@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -31,7 +31,7 @@ namespace SimpleGames.TicTacToe.Tests {
     public void Expectations() {
       TicTacToePosition board = TicTacToePosition.Build("a1", "a2", "a3", "b3");
 
-      Assert.IsTrue(board.ExpectedWinner() == GameOutcome.FirstWin);
+      Assert.IsTrue(board.ExpectedWinner() == GameOutcome.FirstWin, board.DrawPosition());
     }
   }
 

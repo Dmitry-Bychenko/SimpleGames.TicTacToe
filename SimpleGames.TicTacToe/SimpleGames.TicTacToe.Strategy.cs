@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleGames.TicTacToe {
@@ -121,7 +122,7 @@ namespace SimpleGames.TicTacToe {
     /// </summary>
     public static TicTacToeLocation[] BestMoves(this TicTacToePosition position) {
       if (position is null)
-        return new TicTacToeLocation[0];
+        return Array.Empty<TicTacToeLocation>();
 
       return position
         .AvailableMoves()
