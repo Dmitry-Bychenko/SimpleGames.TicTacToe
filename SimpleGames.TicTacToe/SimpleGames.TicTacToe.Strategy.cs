@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace SimpleGames.TicTacToe {
 
@@ -84,48 +82,13 @@ namespace SimpleGames.TicTacToe {
     /// <summary>
     /// Move Expectation
     /// </summary>
-    public static GameOutcome MoveExpectation(this TicTacToePosition position, int line, int column) {
+    public static GameOutcome MoveExpectation(this TicTacToePosition position, TicTacToeLocation move) {
       if (position is null)
         return GameOutcome.Illegal;
-
-      if (position[line, column] != Mark.None)
-        return GameOutcome.Illegal;
-      else if (line < 0 || line > 2 || column < 0 || column > 2)
+      if (move is null)
         return GameOutcome.Illegal;
 
-      return ExpectedWinner(position.MakeMove(line, column));
-    }
-
-    /// <summary>
-    /// Move Expectation
-    /// </summary>
-    public static GameOutcome MoveExpectation(this TicTacToePosition position, string cell) {
-      if (cell is null)
-        return GameOutcome.Illegal;
-
-      var match = Regex.Match(cell, @"^\s*(?<rank>[A-Ca-c])\s*(?<file>[1-3])\s*$");
-
-      if (!match.Success)
-        return GameOutcome.Illegal;
-
-      return MoveExpectation(position,
-                             '3' - match.Groups["file"].Value[0],
-                             match.Groups["rank"].Value.ToUpper()[0] - 'A');
-    }
-
-    /// <summary>
-    /// Move Expectation
-    /// </summary>
-    public static GameOutcome MoveExpectation(this TicTacToePosition position, int index) {
-      if (position is null)
-        return GameOutcome.Illegal;
-
-      if (position[index] != Mark.None)
-        return GameOutcome.Illegal;
-      else if (index < 1 || index > 9)
-        return GameOutcome.Illegal;
-
-      return ExpectedWinner(position.MakeMove(index));
+      return ExpectedWinner(position.MakeMove(move));
     }
 
     /// <summary>
@@ -134,8 +97,13 @@ namespace SimpleGames.TicTacToe {
     ///    0 illegal move
     ///   +1 best move
     /// </summary>
-    public static int MoveQuality(this TicTacToePosition position, int line, int column) {
-      var actual = MoveExpectation(position, line, column);
+    public static int MoveQuality(this TicTacToePosition position, TicTacToeLocation move) {
+      if (position is null)
+        return 0;
+      if (move is null)
+        return 0;
+
+      var actual = MoveExpectation(position, move);
 
       if (actual == GameOutcome.Illegal)
         return 0;
@@ -147,54 +115,19 @@ namespace SimpleGames.TicTacToe {
       else
         return -1;
     }
-
-    /// <summary>
-    /// Move quality
-    ///   -1 worst move
-    ///    0 illegal move
-    ///   +1 best move
-    /// </summary>
-    public static int MoveQuality(this TicTacToePosition position, int index) {
-      var actual = MoveExpectation(position, index);
-
-      if (actual == GameOutcome.Illegal)
-        return 0;
-
-      var best = ExpectedWinner(position);
-
-      if (best == actual)
-        return 1;
-      else
-        return -1;
-    }
-
-    /// <summary>
-    /// Move quality
-    ///   -1 worst move
-    ///    0 illegal move
-    ///   +1 best move
-    /// </summary>
-    public static int MoveQuality(this TicTacToePosition position, string cell) {
-      var match = Regex.Match(cell, @"^\s*(?<rank>[A-Ca-c])\s*(?<file>[1-3])\s*$");
-
-      if (!match.Success)
-        return 0;
-
-      return MoveQuality(position,
-                         '3' - match.Groups["file"].Value[0],
-                         match.Groups["rank"].Value.ToUpper()[0] - 'A');
-    }
-
+        
     /// <summary>
     /// Best Moves (all winning moves or, if the position drawish, all draw moves)
     /// </summary>
-    public static IEnumerable<(int line, int column, int index, string cell)> BestMoves(this TicTacToePosition position) {
+    public static TicTacToeLocation[] BestMoves(this TicTacToePosition position) {
       if (position is null)
-        yield break;
+        return new TicTacToeLocation[0];
 
-      foreach (var move in position.AvailableMoves())
-        if (MoveQuality(position, move.index) == 1)
-          yield return move;
+      return position
+        .AvailableMoves()
+        .Where(move => MoveQuality(position, move) == 1)
+        .OrderBy(move => move)
+        .ToArray();
     }
 
     #endregion Public

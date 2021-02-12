@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
+//using System.Text.RegularExpressions;
 
 namespace SimpleGames.TicTacToe {
 
@@ -134,69 +134,73 @@ namespace SimpleGames.TicTacToe {
     }
 
     /// <summary>
-    /// Make move
+    /// Make Move
     /// </summary>
-    public TicTacToePosition MakeMove(int line, int column) {
-      if (line < 0 || line > 2)
-        throw new ArgumentOutOfRangeException(nameof(line));
-      else if (column < 0 || column > 2)
-        throw new ArgumentOutOfRangeException(nameof(column));
+    public TicTacToePosition MakeMove(TicTacToeLocation move) {
+      if (move is null)
+        throw new ArgumentNullException(nameof(move));
 
-      if (m_Marks[line * 3 + column] != Mark.None)
+      if (m_Marks[move.Index - 1] != Mark.None)
         throw new InvalidOperationException("Illegal move");
-      else if (Outcome != GameOutcome.None)
+      if (Outcome != GameOutcome.None)
         throw new InvalidOperationException("The game is over");
 
       TicTacToePosition result = Clone();
 
-      result.m_Marks[line * 3 + column] = WhoIsOnMove;
+      result.m_Marks[move.Index - 1] = WhoIsOnMove;
 
       return result;
     }
 
     /// <summary>
-    /// Make move, index is
-    ///   1 2 3
-    ///   4 5 6
-    ///   7 8 9
+    /// Is Move Legal
     /// </summary>
-    public TicTacToePosition MakeMove(int index) {
-      if (index < 1 || index > 9)
-        throw new ArgumentOutOfRangeException(nameof(index));
+    public bool IsLegalMove(TicTacToeLocation move, bool checkForOutcome) {
+      if (move is null)
+        return false;
+      if (m_Marks[move.Index - 1] != Mark.None)
+        return false;
+      if (checkForOutcome && Outcome != GameOutcome.None)
+        return false;
 
-      if (m_Marks[index - 1] != Mark.None)
-        throw new InvalidOperationException("Illegal move");
-      else if (Outcome != GameOutcome.None)
-        throw new InvalidOperationException("The game is over");
+      return true;
+    }
+
+    /// <summary>
+    /// Is Move Legal
+    /// </summary>
+    public bool IsLegalMove(TicTacToeLocation move) => IsLegalMove(move, true);
+
+    /// <summary>
+    /// Make Moves
+    /// </summary>
+    public TicTacToePosition MakeMoves(IEnumerable<TicTacToeLocation> moves, bool checkForOutcome) {
+      if (moves is null)
+        throw new ArgumentNullException(nameof(moves));
 
       TicTacToePosition result = Clone();
 
-      result.m_Marks[index - 1] = WhoIsOnMove;
+      foreach (TicTacToeLocation move in moves) {
+        if (!result.IsLegalMove(move, checkForOutcome))
+          throw new InvalidOperationException($"Move {move} is illegal");
+
+        result.m_Marks[move.Index - 1] = result.WhoIsOnMove;
+      }
 
       return result;
     }
 
     /// <summary>
-    /// Make move 
-    ///  3
-    ///  2
-    ///  1
-    ///   a b c
+    /// Make Moves
     /// </summary>
-    /// <param name="cell"></param>
-    /// <returns></returns>
-    public TicTacToePosition MakeMove(string cell) {
-      if (cell is null)
-        throw new ArgumentNullException(nameof(cell));
+    public TicTacToePosition MakeMoves(bool checkForOutcome, params TicTacToeLocation[] moves) =>
+      MakeMoves(moves, checkForOutcome);
 
-      var match = Regex.Match(cell, @"^\s*(?<rank>[A-Ca-c])\s*(?<file>[1-3])\s*$");
-
-      if (!match.Success)
-        throw new FormatException("Incorrect Syntax for cell; a1..c3 expected");
-
-      return MakeMove('3' - match.Groups["file"].Value[0],
-                      match.Groups["rank"].Value.ToUpper()[0] - 'A');
-    }
+    /// <summary>
+    /// Make Moves
+    /// </summary>
+    public TicTacToePosition MakeMoves(params TicTacToeLocation[] moves) =>
+      MakeMoves(moves, true);
 
     /// <summary>
     /// Who is On Move (Crosses or Naugts)
@@ -294,48 +298,12 @@ namespace SimpleGames.TicTacToe {
     /// <param name="line">Line</param>
     /// <param name="column">Column</param>
     /// <returns>Mark</returns>
-    public Mark this[int line, int column] {
-      get => (line < 0 || line > 2 || column < 0 || column > 2)
+    public Mark this[TicTacToeLocation move] {
+      get => move is null
         ? Mark.None
-        : m_Marks[line * 3 + column];
+        : m_Marks[move.Index - 1];
     }
-
-    /// <summary>
-    /// Board
-    ///   1 2 3
-    ///   4 5 6
-    ///   7 8 9
-    /// </summary>
-    /// <returns>Mark</returns>
-    public Mark this[int index] {
-      get => (index < 1 || index > 9)
-        ? Mark.None
-        : m_Marks[index - 1];
-    }
-
-    /// <summary>
-    /// Board
-    ///   3
-    ///   2
-    ///   1
-    ///     a b c
-    /// </summary>
-    /// <param name="cell"></param>
-    /// <returns></returns>
-    public Mark this[string cell] {
-      get {
-        if (cell is null)
-          throw new ArgumentNullException(nameof(cell));
-
-        var match = Regex.Match(cell, @"^\s*(?<rank>[A-Ca-c])\s*(?<file>[1-3])\s*$");
-
-        if (!match.Success)
-          return Mark.None;
-
-        return this['3' - match.Groups["file"].Value[0], match.Groups["rank"].Value.ToUpper()[0] - 'A'];
-      }
-    }
-
+  
     /// <summary>
     /// NUmber of crosses or naughts
     /// </summary>
@@ -360,7 +328,7 @@ namespace SimpleGames.TicTacToe {
     }
 
     /// <summary>
-    /// Available Moves
+    /// Available Positions
     /// </summary>
     public IEnumerable<TicTacToePosition> AvailablePositions() {
       Mark mark = WhoIsOnMove;
@@ -381,20 +349,12 @@ namespace SimpleGames.TicTacToe {
     /// <summary>
     /// Available Moves
     /// </summary>
-    public IEnumerable<(int line, int column, int index, string cell)> AvailableMoves() {
+    public IEnumerable<TicTacToeLocation> AvailableMoves() {
       for (int index = 0; index < m_Marks.Length; ++index) {
         if (m_Marks[index] != Mark.None)
           continue;
 
-        int line = index / 3;
-        int column = index % 3;
-
-        yield return (
-          line,
-          column,
-          index + 1,
-          $"{(char)('a' + column)}{3 - line}"
-        );
+        yield return new TicTacToeLocation(index + 1);
       }
     }
 
