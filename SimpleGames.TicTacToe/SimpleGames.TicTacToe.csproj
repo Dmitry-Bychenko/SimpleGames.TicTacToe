@@ -5,6 +5,9 @@
     <Authors>Dmitry Bychenko</Authors>
     <Description>Tic Tac Toe game. Position, Strategy and Analysis</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>SimpleGames.TicTacToe.snk.pfx</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
