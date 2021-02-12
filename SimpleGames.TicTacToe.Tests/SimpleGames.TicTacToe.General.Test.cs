@@ -9,7 +9,7 @@ namespace SimpleGames.TicTacToe.Tests {
 
 
   [TestClass]
-  public class GameOutcomeTests {
+  public sealed class GameOutcomeTests {
     [TestMethod]
     public void TestReverse() {
       HashSet<GameOutcome> hasWinner = new HashSet<GameOutcome>() {
