@@ -80,6 +80,61 @@ namespace SimpleGames.TicTacToe {
       ? result
       : throw new FormatException("Not a tic-tac-toe position");
 
+    /// <summary>
+    /// Build from moves
+    /// </summary>
+    public static bool TryBuild(IEnumerable<TicTacToeLocation> moves, out TicTacToePosition result) {
+      result = null;
+
+      if (moves is null)
+        return false;
+
+      result = Empty;
+
+      foreach (TicTacToeLocation move in moves) {
+        if (!result.IsLegalMove(move, true)) {
+          result = null;
+
+          return false;
+        };
+
+        result.m_Marks[move.Index - 1] = result.WhoIsOnMove;
+      }
+
+      return true;
+    }
+
+    /// <summary>
+    /// Build from moves
+    /// </summary>
+    public static bool TryBuild(out TicTacToePosition result, params TicTacToeLocation[] moves) =>
+      TryBuild(moves, out result);
+
+    /// <summary>
+    /// Build from moves
+    /// </summary>
+    public static TicTacToePosition Build(IEnumerable<TicTacToeLocation> moves) {
+      if (moves is null)
+        throw new ArgumentNullException(nameof(moves));
+
+      TicTacToePosition result = Empty;
+
+      foreach (TicTacToeLocation move in moves) {
+        if (!result.IsLegalMove(move, true))
+          throw new ArgumentException($"Move {move} is illegal", nameof(moves));
+
+        result.m_Marks[move.Index - 1] = result.WhoIsOnMove;
+      }
+
+      return result;
+    }
+
+    /// <summary>
+    /// Build from moves
+    /// </summary>
+    public static TicTacToePosition Build(params TicTacToeLocation[] moves) =>
+      Build(moves as IEnumerable<TicTacToeLocation>);
+
     #endregion Create
 
     #region Public

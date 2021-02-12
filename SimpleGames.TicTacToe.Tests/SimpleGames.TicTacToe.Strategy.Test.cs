@@ -26,6 +26,13 @@ namespace SimpleGames.TicTacToe.Tests {
 
       Assert.IsTrue(bestMoves.SequenceEqual(expected), string.Join(" ", bestMoves.AsEnumerable()));
     }
+
+    [TestMethod]
+    public void Expectations() {
+      TicTacToePosition board = TicTacToePosition.Build("a1", "a2", "a3", "b3");
+
+      Assert.IsTrue(board.ExpectedWinner() == GameOutcome.FirstWin);
+    }
   }
 
 }
