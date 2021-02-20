@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace SimpleGames.TicTacToe {
@@ -14,8 +12,24 @@ namespace SimpleGames.TicTacToe {
   //
   //-------------------------------------------------------------------------------------------------------------------
 
-  public sealed class TicTacToeLocation : IEquatable<TicTacToeLocation>, IComparable<TicTacToeLocation> {
+  public sealed class TicTacToeLocation 
+    : IEquatable<TicTacToeLocation>, 
+      IComparable<TicTacToeLocation>,
+      ISerializable {
+
     #region Create
+
+    private TicTacToeLocation(SerializationInfo info, StreamingContext context) {
+      if (info is null)
+        throw new ArgumentNullException(nameof(info));
+
+      int index = info.GetInt32("info");
+
+      if (index < 1 || index > 9)
+        throw new ArgumentOutOfRangeException(nameof(index), "Index must be within 1..9");
+
+      Index = index;
+    }
 
     /// <summary>
     /// From Index [1..9]
@@ -67,6 +81,51 @@ namespace SimpleGames.TicTacToe {
                match.Groups["rank"].Value.ToUpper()[0] - 'A' + 1;
     }
 
+    /// <summary>
+    /// Try Parse
+    /// </summary>
+    public static bool TryParse(string value, out TicTacToeLocation result) {
+      result = null;
+
+      if (string.IsNullOrWhiteSpace(value))
+        return false;
+
+      if (Regex.IsMatch(value, @"^\s*(?<rank>[A-Ca-c])\s*(?<file>[1-3])\s*$")) {
+        result = new TicTacToeLocation(value);
+
+        return true;
+      }
+
+      if (int.TryParse(value, out int index) && index >= 1 && index <= 9) {
+        result = new TicTacToeLocation(index);
+
+        return true;
+      }
+
+      var match = Regex.Match(value, @"^\s*(?<rank>[1-3])\s*[:_,;=~]?\s*(?<file>[1-3])\s*$");
+
+      if (match.Success) {
+        result = new TicTacToeLocation(int.Parse(match.Groups["rank"].Value), int.Parse(match.Groups["file"].Value));
+
+        return true;
+      }
+
+      return false;
+    }
+
+    /// <summary>
+    /// Parse
+    /// </summary>
+    public static TicTacToeLocation Parse(string value) {
+      if (value is null)
+        throw new ArgumentNullException(nameof(value));
+
+      if (TryParse(value, out var result))
+        return result;
+
+      throw new FormatException("Invalid Tic-Tac-Toe location.");
+    }
+
     #endregion Create
 
     #region Public
@@ -86,7 +145,7 @@ namespace SimpleGames.TicTacToe {
     }
 
     /// <summary>
-    /// Index [1..3]
+    /// Index [1..9]
     /// </summary>
     public int Index { get; }
 
@@ -141,7 +200,7 @@ namespace SimpleGames.TicTacToe {
     /// <summary>
     /// From cell 
     /// </summary>
-    public static implicit operator TicTacToeLocation(string cell) => new TicTacToeLocation(cell);
+    public static implicit operator TicTacToeLocation(string cell) => Parse(cell);
 
     /// <summary>
     /// From index 
@@ -182,6 +241,20 @@ namespace SimpleGames.TicTacToe {
     public int CompareTo(TicTacToeLocation other) => Compare(this, other);
 
     #endregion IComparable<TicTacToeLocation>
+
+    #region ISerializable
+
+    /// <summary>
+    /// Serializable Data
+    /// </summary>
+    public void GetObjectData(SerializationInfo info, StreamingContext context) {
+      if (info is null)
+        throw new ArgumentNullException(nameof(info));
+
+      info.AddValue("index", Index);
+    }
+
+    #endregion ISerializable
   }
 
 }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -12,6 +12,9 @@
     <Copyright>Copyright (c) 2021 by Dmitry Bychenko</Copyright>
     <PackageIcon>TicTacToe.png</PackageIcon>
     <RepositoryUrl>https://github.com/Dmitry-Bychenko/SimpleGames.TicTacToe</RepositoryUrl>
+    <Version>1.0.0.1</Version>
+    <PackageTags>Tic-Tac-Toe</PackageTags>
+    <PackageReleaseNotes>More analysis</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

@@ -33,6 +33,25 @@ namespace SimpleGames.TicTacToe.Tests {
 
       Assert.IsTrue(board.ExpectedWinner() == GameOutcome.FirstWin, board.DrawPosition());
     }
+
+    [TestMethod]
+    public void MoveExpectancy() {
+      TicTacToePosition board = TicTacToePosition.Set(
+        crosses : new TicTacToeLocation[] { "a3", "c1"},
+        naughts : new TicTacToeLocation[] { "b2", "c3"});
+
+      Assert.IsTrue(board.MoveDegree("a1") == TicTacToe.MoveExpectancy.Win, "Must be winning move");
+      Assert.IsTrue(board.MoveDegree("a2") == TicTacToe.MoveExpectancy.Lose, "Must be losing move");
+    }
+
+    [TestMethod]
+    public void MoveExpectancyIllegal() {
+      TicTacToePosition board = TicTacToePosition.Set(
+        crosses: new TicTacToeLocation[] { "a3", "c1" },
+        naughts: new TicTacToeLocation[] { "b2", "c3" });
+
+      Assert.IsTrue(board.MoveDegree("a3") == TicTacToe.MoveExpectancy.Illegal, "Must be illegal move");
+    }
   }
 
 }

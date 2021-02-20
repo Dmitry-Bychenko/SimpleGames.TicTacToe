@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-//using System.Text.RegularExpressions;
+using System.Runtime.Serialization;
 
 namespace SimpleGames.TicTacToe {
 
@@ -14,7 +13,10 @@ namespace SimpleGames.TicTacToe {
   //
   //-------------------------------------------------------------------------------------------------------------------
 
-  public sealed class TicTacToePosition : IEquatable<TicTacToePosition> {
+  public sealed class TicTacToePosition 
+    : IEquatable<TicTacToePosition>, 
+      ISerializable {
+
     #region Private Data
 
     private readonly Mark[] m_Marks = new Mark[9];
@@ -25,6 +27,17 @@ namespace SimpleGames.TicTacToe {
 
     // Standard Constructor
     private TicTacToePosition() {
+    }
+
+    // [De]Serialization Constructor
+    private TicTacToePosition(SerializationInfo info, StreamingContext context) {
+      if (info is null)
+        throw new ArgumentNullException(nameof(info));
+
+      TicTacToePosition copy = Parse(info.GetString("field"));
+
+      for (int i = 0; i < copy.m_Marks.Length; ++i)
+        m_Marks[i] = copy.m_Marks[i];
     }
 
     // Clone
@@ -134,6 +147,70 @@ namespace SimpleGames.TicTacToe {
     /// </summary>
     public static TicTacToePosition Build(params TicTacToeLocation[] moves) =>
       Build(moves as IEnumerable<TicTacToeLocation>);
+
+    /// <summary>
+    /// Set Position
+    /// </summary>
+    /// <param name="result">Position or null if arguments are invalid</param>
+    /// <param name="crosses">Crosses</param>
+    /// <param name="naughts">Noughts</param>
+    /// <returns>true, if position valid, false otherwise</returns>
+    public static bool TrySet(out TicTacToePosition result, 
+                                  IEnumerable<TicTacToeLocation> crosses,
+                                  IEnumerable<TicTacToeLocation> naughts) {
+      result = null;
+
+      if (crosses is null)
+        return false;
+      if (naughts is null)
+        return false;
+
+      result = new TicTacToePosition();
+
+      HashSet<TicTacToeLocation> completed = new HashSet<TicTacToeLocation>();
+
+      foreach (var loc in crosses) {
+        if (!completed.Add(loc)) {
+          result = null;
+
+          return false;
+        }
+
+        result.m_Marks[loc.Index - 1] = Mark.Cross;
+      }
+
+      foreach (var loc in naughts) {
+        if (!completed.Add(loc)) {
+          result = null;
+
+          return false;
+        }
+
+        result.m_Marks[loc.Index - 1] = Mark.Nought;
+      }
+
+      return true;
+    }
+
+    /// <summary>
+    /// Set Position
+    /// </summary>
+    /// <param name="crosses">Crosses</param>
+    /// <param name="naughts">Noughts</param>
+    /// <returns>Position</returns>
+    /// <exception cref="FormatException">When set is invalid</exception>
+    public static TicTacToePosition Set(IEnumerable<TicTacToeLocation> crosses,
+                                        IEnumerable<TicTacToeLocation> naughts) {
+      if (crosses is null)
+        throw new ArgumentNullException(nameof(crosses));
+      if (naughts is null)
+        throw new ArgumentNullException(nameof(naughts));
+
+      if (TrySet(out var result, crosses, naughts))
+        return result;
+      else
+        throw new FormatException("Invalid position");
+    }
 
     #endregion Create
 
@@ -509,6 +586,26 @@ namespace SimpleGames.TicTacToe {
     }
 
     #endregion IEquatable<TicTacToePosition>
+
+    #region ISerializable
+
+    /// <summary>
+    /// Serializable Data
+    /// </summary>
+    public void GetObjectData(SerializationInfo info, StreamingContext context) {
+      if (info is null)
+        throw new ArgumentNullException(nameof(info));
+
+      string field = string.Join(Environment.NewLine,
+        string.Concat(m_Marks.Skip(0).Take(3).Select(m => m.ToChar())),
+        string.Concat(m_Marks.Skip(3).Take(3).Select(m => m.ToChar())),
+        string.Concat(m_Marks.Skip(6).Take(3).Select(m => m.ToChar()))
+      );
+
+      info.AddValue("field", field);
+    }
+
+    #endregion ISerializable
   }
 
 }

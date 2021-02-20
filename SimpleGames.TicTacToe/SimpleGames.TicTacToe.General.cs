@@ -161,4 +161,31 @@ namespace SimpleGames.TicTacToe {
     #endregion Public
   }
 
+  //-------------------------------------------------------------------------------------------------------------------
+  //
+  /// <summary>
+  /// Move Degree
+  /// </summary>
+  //
+  //-------------------------------------------------------------------------------------------------------------------
+
+  public enum MoveExpectancy {
+    /// <summary>
+    /// Illegal Move
+    /// </summary>
+    Illegal = 0,
+    /// <summary>
+    /// Losing Move
+    /// </summary>
+    Lose = 3,
+    /// <summary>
+    /// Drawing 
+    /// </summary>
+    Draw = 2,
+    /// <summary>
+    /// Winning
+    /// </summary>
+    Win = 1,
+  }
+
 }

@@ -131,6 +131,43 @@ namespace SimpleGames.TicTacToe {
         .ToArray();
     }
 
+    /// <summary>
+    /// Move Degree, winning, loosing etc.
+    /// </summary>
+    public static MoveExpectancy MoveDegree(this TicTacToePosition position, TicTacToeLocation move) {
+      if (position is null)
+        return MoveExpectancy.Illegal;
+      if (move is null)
+        return MoveExpectancy.Illegal;
+
+      if (!position.IsLegalMove(move, true))
+        return MoveExpectancy.Illegal;
+
+      var expectation = MoveExpectation(position, move);
+
+      if (expectation == GameOutcome.Illegal)
+        return MoveExpectancy.Illegal;
+
+      if (position.WhoIsOnMove == Mark.Cross) {
+        if (expectation == GameOutcome.FirstWin)
+          return MoveExpectancy.Win;
+        else if (expectation == GameOutcome.Draw)
+          return MoveExpectancy.Draw;
+        else if (expectation == GameOutcome.SecondWin)
+          return MoveExpectancy.Lose;
+      }
+      else {
+        if (expectation == GameOutcome.FirstWin)
+          return MoveExpectancy.Lose;
+        else if (expectation == GameOutcome.Draw)
+          return MoveExpectancy.Draw;
+        else if (expectation == GameOutcome.SecondWin)
+          return MoveExpectancy.Win;
+      }
+
+      return MoveExpectancy.Illegal;
+    }
+
     #endregion Public
   }
 
