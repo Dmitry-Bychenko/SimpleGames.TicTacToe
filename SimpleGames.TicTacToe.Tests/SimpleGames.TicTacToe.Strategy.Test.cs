@@ -1,11 +1,7 @@
-﻿using SimpleGames.TicTacToe;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Linq;
 
 namespace SimpleGames.TicTacToe.Tests {
 
@@ -37,8 +33,8 @@ namespace SimpleGames.TicTacToe.Tests {
     [TestMethod]
     public void MoveExpectancy() {
       TicTacToePosition board = TicTacToePosition.Set(
-        crosses : new TicTacToeLocation[] { "a3", "c1"},
-        naughts : new TicTacToeLocation[] { "b2", "c3"});
+        crosses: new TicTacToeLocation[] { "a3", "c1" },
+        naughts: new TicTacToeLocation[] { "b2", "c3" });
 
       Assert.IsTrue(board.MoveDegree("a1") == TicTacToe.MoveExpectancy.Win, "Must be winning move");
       Assert.IsTrue(board.MoveDegree("a2") == TicTacToe.MoveExpectancy.Lose, "Must be losing move");

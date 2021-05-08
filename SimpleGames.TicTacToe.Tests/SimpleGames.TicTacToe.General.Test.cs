@@ -1,9 +1,6 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-
-using SimpleGames.TicTacToe;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SimpleGames.TicTacToe.Tests {
 
@@ -12,7 +9,7 @@ namespace SimpleGames.TicTacToe.Tests {
   public sealed class GameOutcomeTests {
     [TestMethod]
     public void TestReverse() {
-      HashSet<GameOutcome> hasWinner = new HashSet<GameOutcome>() {
+      HashSet<GameOutcome> hasWinner = new() {
         GameOutcome.FirstWin,
         GameOutcome.SecondWin
       };

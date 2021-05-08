@@ -116,7 +116,7 @@ namespace SimpleGames.TicTacToe {
       else
         return -1;
     }
-        
+
     /// <summary>
     /// Best Moves (all winning moves or, if the position drawish, all draw moves)
     /// </summary>

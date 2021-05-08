@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace SimpleGames.TicTacToe {
-  
+
   //-------------------------------------------------------------------------------------------------------------------
   //
   /// <summary>
@@ -12,8 +12,8 @@ namespace SimpleGames.TicTacToe {
   //
   //-------------------------------------------------------------------------------------------------------------------
 
-  public sealed class TicTacToeLocation 
-    : IEquatable<TicTacToeLocation>, 
+  public sealed class TicTacToeLocation
+    : IEquatable<TicTacToeLocation>,
       IComparable<TicTacToeLocation>,
       ISerializable {
 
@@ -176,7 +176,7 @@ namespace SimpleGames.TicTacToe {
     /// <summary>
     /// Equals 
     /// </summary>
-    public  static bool operator == (TicTacToeLocation left, TicTacToeLocation right) {
+    public static bool operator ==(TicTacToeLocation left, TicTacToeLocation right) {
       if (ReferenceEquals(left, right))
         return true;
       if (left is null || right is null)
@@ -205,12 +205,12 @@ namespace SimpleGames.TicTacToe {
     /// <summary>
     /// From index 
     /// </summary>
-    public static implicit operator TicTacToeLocation(int index) => new TicTacToeLocation(index);
+    public static implicit operator TicTacToeLocation(int index) => new(index);
 
     /// <summary>
     /// From Rank and File 
     /// </summary>
-    public static implicit operator TicTacToeLocation((int rank, int file) position) => new TicTacToeLocation(position);
+    public static implicit operator TicTacToeLocation((int rank, int file) position) => new(position);
 
     #endregion Operators
 

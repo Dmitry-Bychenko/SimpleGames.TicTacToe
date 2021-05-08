@@ -13,8 +13,8 @@ namespace SimpleGames.TicTacToe {
   //
   //-------------------------------------------------------------------------------------------------------------------
 
-  public sealed class TicTacToePosition 
-    : IEquatable<TicTacToePosition>, 
+  public sealed class TicTacToePosition
+    : IEquatable<TicTacToePosition>,
       ISerializable {
 
     #region Private Data
@@ -42,7 +42,7 @@ namespace SimpleGames.TicTacToe {
 
     // Clone
     private TicTacToePosition Clone() {
-      TicTacToePosition result = new TicTacToePosition();
+      TicTacToePosition result = new();
 
       for (int i = m_Marks.Length - 1; i >= 0; --i)
         result.m_Marks[i] = m_Marks[i];
@@ -155,7 +155,7 @@ namespace SimpleGames.TicTacToe {
     /// <param name="crosses">Crosses</param>
     /// <param name="naughts">Noughts</param>
     /// <returns>true, if position valid, false otherwise</returns>
-    public static bool TrySet(out TicTacToePosition result, 
+    public static bool TrySet(out TicTacToePosition result,
                                   IEnumerable<TicTacToeLocation> crosses,
                                   IEnumerable<TicTacToeLocation> naughts) {
       result = null;
@@ -167,7 +167,7 @@ namespace SimpleGames.TicTacToe {
 
       result = new TicTacToePosition();
 
-      HashSet<TicTacToeLocation> completed = new HashSet<TicTacToeLocation>();
+      HashSet<TicTacToeLocation> completed = new();
 
       foreach (var loc in crosses) {
         if (!completed.Add(loc)) {
@@ -225,10 +225,10 @@ namespace SimpleGames.TicTacToe {
     /// Entire game Tree (Breadth First Search)
     /// </summary>
     public static IEnumerable<TicTacToePosition> AllLegalPositions() {
-      HashSet<TicTacToePosition> agenda = new HashSet<TicTacToePosition>() { Empty };
+      HashSet<TicTacToePosition> agenda = new() { Empty };
 
       while (agenda.Count > 0) {
-        HashSet<TicTacToePosition> next = new HashSet<TicTacToePosition>();
+        HashSet<TicTacToePosition> next = new();
 
         foreach (var parent in agenda) {
           yield return parent;
@@ -435,7 +435,7 @@ namespace SimpleGames.TicTacToe {
         ? Mark.None
         : m_Marks[move.Index - 1];
     }
-  
+
     /// <summary>
     /// NUmber of crosses or naughts
     /// </summary>
